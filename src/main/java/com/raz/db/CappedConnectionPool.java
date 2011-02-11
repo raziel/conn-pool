@@ -43,25 +43,49 @@ public abstract class CappedConnectionPool implements ConnectionPool {
       return conn;
     } finally {
       if (conn == null) {
-        logger.debug("Releasing connection-request due to exception while acquiring the connection.");
         connRequest.release();
+        logger.debug("Connection-request released due to exception while acquiring the connection.");
       }
     }
   }
 
   @Override
   public void releaseConnection(Connection conn) throws SQLException {
-    logger.debug("Trying to release a connection.");
-    if (reallocateConnection(conn)) {
-      connRequest.release();
-      logger.debug("Connection released.");
-      return;
+    boolean doRelease = true;
+    try {
+      logger.debug("Trying to release a connection.");
+      doRelease = reallocateConnection(conn);
+    } finally {
+      if (doRelease) {
+        connRequest.release();
+        logger.debug("Connection released.");
+      } else {
+        logger.debug("Unable to release a connection.");
+      }
     }
-    logger.debug("Unable to release a connection.");
   }
 
+  /**
+   * Method expected to provide the Connection to be returned to users of the connection pool.
+   *
+   * @return A unused Connection.
+   * @throws SQLException If there is a problem acquiring the connection.
+   */
   protected abstract Connection aquireConnection() throws SQLException;
 
+  /**
+   * Method expected to re-allocate the Connection back into the collection of available connections
+   * to be reused.
+   *
+   * The method must return true only the first time the connection is re-allocated since it was
+   * last acquired. This is to prevent for multiple calls to re-allocate the connection without
+   * re-acquiring it in between them.
+   *
+   * @param conn The Connection to re-allocate.
+   * @return <code>true</code> is the connection was successfully reallocated, <code>false</code>
+   * otherwise.
+   * @throws SQLException If there is a problem reallocating the connection.
+   */
   protected abstract boolean reallocateConnection(Connection conn) throws SQLException;
 
 }

@@ -3,6 +3,8 @@ package com.raz.db;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import com.raz.db.conn.ConnectionWrapper;
+
 /**
  * In charge of providing {@link Connection} instances, and reallocating them to be reused, if
  * possible.
@@ -10,7 +12,7 @@ import java.sql.SQLException;
  * @author raziel.alvarez
  *
  */
-public interface ConnectionManagementStrategy {
+public interface ConnectionManagementStrategy<T extends ConnectionWrapper> {
 
   /**
    * Acquires a Connection currently not in use.
@@ -18,16 +20,14 @@ public interface ConnectionManagementStrategy {
    * @return A free connection.
    * @throws SQLException If there is a problem acquiring the connection.
    */
-  Connection aquireConnection() throws SQLException;
+  T aquireConnection() throws SQLException;
 
   /**
    * Reallocates the passed Connection for its later use.
    *
    * @param conn The connection to reallocate.
-   * @return <code>true</code> is the connection was successfully reallocated, <code>false</code>
-   * otherwise.
    * @throws SQLException If there is a problem reallocating the connection.
    */
-  boolean reallocateConnection(Connection conn) throws SQLException;
+  void reallocateConnection(T conn) throws SQLException;
 
 }
