@@ -2,6 +2,7 @@ package com.raz.db.mng;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 import com.raz.db.conn.ConnectionWrapper;
 
@@ -31,10 +32,10 @@ public interface ConnectionManagementStrategy<T extends ConnectionWrapper> {
   void reallocateConnection(T conn) throws SQLException;
 
   /**
-   * Releases all available connections.
+   * Removes all available connections, returning a list of the removed items.
    *
-   * @return
+   * @return Removed connections.
    */
-  void closeAvailableConnections();
+  List<T> removeAvailableConnections();
 
 }

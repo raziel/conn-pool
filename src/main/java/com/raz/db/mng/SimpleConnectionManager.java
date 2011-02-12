@@ -2,6 +2,8 @@ package com.raz.db.mng;
 
 import java.sql.SQLException;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 
 import com.raz.db.conn.ConnectionProvider;
@@ -16,7 +18,7 @@ import com.raz.db.conn.ConnectionWrapper;
  * closed yet; otherwise a new connection is created.
  *
  * Reallocated connections are collected and reused during subsequent calls to
- * {@link #aquireConnection()}.
+ * {@link #aquireConnection()} in a FIFO (first-in-first-out) manner.
  *
  * @author raziel.alvarez
  *
@@ -45,7 +47,7 @@ implements ConnectionManagementStrategy<T> {
     } else {
       T conn = availableConnections.remove();
       if (conn.getConnection().isClosed()) {
-        aquireConnection();
+        return aquireConnection();
       }
       return conn;
     }
@@ -57,8 +59,10 @@ implements ConnectionManagementStrategy<T> {
   }
 
   @Override
-  public synchronized void closeAvailableConnections() {
+  public synchronized List<T> removeAvailableConnections() {
+    List<T> removed = new ArrayList<T>(availableConnections);
     availableConnections.clear();
+    return removed;
   }
 
 }

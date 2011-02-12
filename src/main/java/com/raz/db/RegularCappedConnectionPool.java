@@ -28,7 +28,7 @@ public class RegularCappedConnectionPool extends CappedConnectionPool {
    *
    * @param connMngr The connection manager.
    * @param maxLiveConnections The max number of connections.
-   * @param requestTimeout The timeout for a request.
+   * @param requestTimeout The timeout in seconds for a request.
    */
   public RegularCappedConnectionPool(ConnectionManagementStrategy<SimpleConnectionWrapper> connMngr,
     int maxLiveConnections, int requestTimeout) {
@@ -73,7 +73,13 @@ public class RegularCappedConnectionPool extends CappedConnectionPool {
   @Override
   protected void closeConnections() {
     logDebug("Releasing connections in the connection manager.");
-    connMngr.closeAvailableConnections();
+    for (SimpleConnectionWrapper cw : connMngr.removeAvailableConnections()) {
+      try {
+        cw.getConnection().close();
+      } catch (SQLException e) {
+        logger.error("Problem closing connection.", e);
+      }
+    }
     logDebug("Available connections released in the connection manager.");
   }
 

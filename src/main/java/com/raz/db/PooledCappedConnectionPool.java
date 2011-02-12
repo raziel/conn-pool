@@ -100,7 +100,13 @@ public class PooledCappedConnectionPool extends CappedConnectionPool {
   @Override
   protected void closeConnections() {
     logDebug("Releasing connections in the connection manager.");
-    connMngr.closeAvailableConnections();
+    for (PooledConnectionWrapper cw : connMngr.removeAvailableConnections()) {
+      try {
+        cw.getPooledConnection().close();
+      } catch (SQLException e) {
+        logger.error("Problem closing connection.", e);
+      }
+    }
     logDebug("Available connections released in the connection manager.");
   }
 

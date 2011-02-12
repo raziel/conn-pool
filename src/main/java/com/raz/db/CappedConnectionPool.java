@@ -36,7 +36,7 @@ public abstract class CappedConnectionPool implements ConnectionPool {
    * Creates a new Connection Pool capped to the given maximum number of alive (in use) connections,
    * and a timeout.
    * @param maxLiveConnections The maximum number of alive connections.
-   * @param requestTimeout The timeout for a request to be fulfilled.
+   * @param requestTimeout The timeout in seconds for a request to be fulfilled.
    */
   public CappedConnectionPool(int maxLiveConnections, int requestTimeout) {
     connRequest = new Semaphore(maxLiveConnections, true);
