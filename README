@@ -1,0 +1,12 @@
+== Description ==
+Flexible implementation of a Database Connection Pool. It allows to work with different kinds of Data Sources, as well as swapping different strategies for managing (creating, reallocating, removing) the connections.
+
+==How to Build the Project==
+The Connection Pool is a standard maven project (http://maven.apache.org). Thus, assuming you have installed maven and consequently Java, in order to build the JAR just execute the following goal at the level of the pom.xml file:
+
+/conn-pool $ mvn clean install
+
+This will run the tests and place the JAR file in the target directory.
+
+==Latest Source==
+An updated version of the code and documentation are available at: https://github.com/raziel-git/conn-pool
