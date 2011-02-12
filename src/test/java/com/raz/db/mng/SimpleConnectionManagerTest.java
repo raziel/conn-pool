@@ -9,17 +9,17 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.raz.db.MockConnection;
+import com.raz.db.MockCloseableConnection;
 import com.raz.db.conn.ConnectionProvider;
 import com.raz.db.conn.ConnectionWrapper;
 
 public class SimpleConnectionManagerTest {
 
-  SimpleConnectionManager<MockConnectionWrapper> connMngr;
+  SimpleConnectionManager<CloseableMockConnectionWrapper> connMngr;
 
   @Before
   public void setUp() {
-    connMngr = new SimpleConnectionManager<MockConnectionWrapper>(new MockConnectionProvider());
+    connMngr = new SimpleConnectionManager<CloseableMockConnectionWrapper>(new MockConnectionProvider());
     connMngr.removeAvailableConnections();
   }
 
@@ -29,7 +29,7 @@ public class SimpleConnectionManagerTest {
    */
   @Test
   public void testReallocateConnection() throws Exception {
-    MockConnectionWrapper conn = new MockConnectionWrapper();
+    CloseableMockConnectionWrapper conn = new CloseableMockConnectionWrapper();
     connMngr.reallocateConnection(conn);
     Assert.assertSame(conn, connMngr.removeAvailableConnections().get(0));
   }
@@ -40,13 +40,13 @@ public class SimpleConnectionManagerTest {
    */
   @Test
   public void testRemoveAvailableConnections() throws Exception {
-    MockConnectionWrapper conn1 = new MockConnectionWrapper();
-    MockConnectionWrapper conn2 = new MockConnectionWrapper();
-    MockConnectionWrapper conn3 = new MockConnectionWrapper();
+    CloseableMockConnectionWrapper conn1 = new CloseableMockConnectionWrapper();
+    CloseableMockConnectionWrapper conn2 = new CloseableMockConnectionWrapper();
+    CloseableMockConnectionWrapper conn3 = new CloseableMockConnectionWrapper();
     connMngr.reallocateConnection(conn1);
     connMngr.reallocateConnection(conn2);
     connMngr.reallocateConnection(conn3);
-    List<MockConnectionWrapper> removed = connMngr.removeAvailableConnections();
+    List<CloseableMockConnectionWrapper> removed = connMngr.removeAvailableConnections();
     Assert.assertSame(conn1, removed.get(0));
     Assert.assertSame(conn2, removed.get(1));
     Assert.assertSame(conn3, removed.get(2));
@@ -57,7 +57,7 @@ public class SimpleConnectionManagerTest {
    */
   @Test
   public void testAquireConnection_ReturnAvailable() throws Exception {
-    MockConnectionWrapper conn = new MockConnectionWrapper();
+    CloseableMockConnectionWrapper conn = new CloseableMockConnectionWrapper();
     connMngr.reallocateConnection(conn);
     Assert.assertSame(conn, connMngr.aquireConnection());
   }
@@ -67,9 +67,9 @@ public class SimpleConnectionManagerTest {
    */
   @Test
   public void testAquireConnection_FIFO() throws Exception {
-    MockConnectionWrapper conn1 = new MockConnectionWrapper();
-    MockConnectionWrapper conn2 = new MockConnectionWrapper();
-    MockConnectionWrapper conn3 = new MockConnectionWrapper();
+    CloseableMockConnectionWrapper conn1 = new CloseableMockConnectionWrapper();
+    CloseableMockConnectionWrapper conn2 = new CloseableMockConnectionWrapper();
+    CloseableMockConnectionWrapper conn3 = new CloseableMockConnectionWrapper();
     connMngr.reallocateConnection(conn1);
     connMngr.reallocateConnection(conn2);
     connMngr.reallocateConnection(conn3);
@@ -93,8 +93,8 @@ public class SimpleConnectionManagerTest {
    */
   @Test
   public void testAquireConnection_SkipClosedConnection() throws Exception {
-    MockConnectionWrapper conn1 = new MockConnectionWrapper();
-    MockConnectionWrapper conn2 = new MockConnectionWrapper();
+    CloseableMockConnectionWrapper conn1 = new CloseableMockConnectionWrapper();
+    CloseableMockConnectionWrapper conn2 = new CloseableMockConnectionWrapper();
     conn1.getConnection().close();
     connMngr.reallocateConnection(conn1);
     connMngr.reallocateConnection(conn2);
@@ -108,8 +108,8 @@ public class SimpleConnectionManagerTest {
    */
   @Test
   public void testAquireConnection_CreateConnectionIfAllClosed() throws Exception {
-    MockConnectionWrapper conn1 = new MockConnectionWrapper();
-    MockConnectionWrapper conn2 = new MockConnectionWrapper();
+    CloseableMockConnectionWrapper conn1 = new CloseableMockConnectionWrapper();
+    CloseableMockConnectionWrapper conn2 = new CloseableMockConnectionWrapper();
     conn1.getConnection().close();
     conn2.getConnection().close();
     connMngr.reallocateConnection(conn1);
@@ -118,25 +118,15 @@ public class SimpleConnectionManagerTest {
     Assert.assertTrue(connMngr.removeAvailableConnections().isEmpty());
   }
 
-  private static class MockConnectionProvider implements ConnectionProvider<MockConnectionWrapper> {
+  private static class MockConnectionProvider implements ConnectionProvider<CloseableMockConnectionWrapper> {
     @Override
-    public MockConnectionWrapper getConnection() throws SQLException {
-      return new MockConnectionWrapper();
+    public CloseableMockConnectionWrapper getConnection() throws SQLException {
+      return new CloseableMockConnectionWrapper();
     }
   }
 
-  private static class MockConnectionWrapper implements ConnectionWrapper {
-    private Connection conn = new MockConnection() {
-      private boolean closed;
-      @Override
-      public boolean isClosed() throws SQLException {
-        return closed;
-      }
-      @Override
-      public void close() throws SQLException {
-        closed = true;
-      }
-    };
+  private static class CloseableMockConnectionWrapper implements ConnectionWrapper {
+    private Connection conn = new MockCloseableConnection();
     @Override
     public Connection getConnection() {
       return conn;
