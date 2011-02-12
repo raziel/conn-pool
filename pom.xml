@@ -4,8 +4,9 @@
   <groupId>com.raz.db</groupId>
   <artifactId>conn-pool</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
-  <name>Connection Pool</name>
+  <version>0.9</version>
+  <name>Flexible Connection Pool</name>
+  <description>Flexible implementation of a Connection Pool.</description>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
