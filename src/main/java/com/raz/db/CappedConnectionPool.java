@@ -104,7 +104,7 @@ public abstract class CappedConnectionPool implements ConnectionPool {
   }
 
   @Override
-  public void freeConnections() {
+  public void closePool() {
     logDebug("Closing available connections.");
     poolClosed = true;
     closeConnections();

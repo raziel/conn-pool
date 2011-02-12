@@ -30,10 +30,10 @@ public interface ConnectionPool {
   void releaseConnection(Connection con) throws SQLException;
 
   /**
-   * Closes all available connections.
+   * Closes all available connections, and closes the pool from servicing more connection requests.
    *
    * @throws SQLException Exception thrown in case of a failure closing the connections.
    */
-  void freeConnections() throws SQLException;
+  void closePool() throws SQLException;
 
 }
