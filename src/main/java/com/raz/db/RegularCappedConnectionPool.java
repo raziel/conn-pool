@@ -16,8 +16,8 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class RegularCappedConnectionPool extends CappedConnectionPool {
 
-  private ConnectionManagementStrategy<RegularConnectionWrapper> connMngr;
-  private ConcurrentMap<Connection, RegularConnectionWrapper> liveConnections;
+  private ConnectionManagementStrategy<SimpleConnectionWrapper> connMngr;
+  private ConcurrentMap<Connection, SimpleConnectionWrapper> liveConnections;
 
   /**
    * Creates a new Connection Pool capped to the given parameters, and uses the passed connection
@@ -27,17 +27,17 @@ public class RegularCappedConnectionPool extends CappedConnectionPool {
    * @param maxLiveConnections The max number of connections.
    * @param requestTimeout The timeout for a request.
    */
-  public RegularCappedConnectionPool(ConnectionManagementStrategy<RegularConnectionWrapper> connMngr,
+  public RegularCappedConnectionPool(ConnectionManagementStrategy<SimpleConnectionWrapper> connMngr,
     int maxLiveConnections, int requestTimeout) {
     super(maxLiveConnections, requestTimeout);
     this.connMngr = connMngr;
-    liveConnections = new ConcurrentHashMap<Connection, RegularConnectionWrapper>();
+    liveConnections = new ConcurrentHashMap<Connection, SimpleConnectionWrapper>();
   }
 
   @Override
   protected Connection aquireConnection() throws SQLException {
     logDebug("Acquiring a connection from the connection manager.");
-    RegularConnectionWrapper connw = connMngr.aquireConnection();
+    SimpleConnectionWrapper connw = connMngr.aquireConnection();
     Connection conn = connw.getConnection();
     liveConnections.put(conn, connw);
     logDebug("Connection aquired from the connection manager.");
@@ -47,7 +47,7 @@ public class RegularCappedConnectionPool extends CappedConnectionPool {
   @Override
   protected boolean reallocateConnection(Connection conn) throws SQLException {
     logDebug("Reallocating a connection into the connection manager.");
-    RegularConnectionWrapper connw = liveConnections.remove(conn);
+    SimpleConnectionWrapper connw = liveConnections.remove(conn);
     if (connw != null) {
       connMngr.reallocateConnection(connw);
       logDebug("Connection reallocated into the connection manager.");

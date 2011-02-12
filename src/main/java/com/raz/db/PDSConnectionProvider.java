@@ -8,10 +8,22 @@ import javax.sql.PooledConnection;
 
 import com.raz.db.conn.PooledConnectionWrapper;
 
+/**
+ * Provider of {@link PooledConnectionWrapper} instances backed by a
+ * {@link ConnectionPoolDataSource}.
+ *
+ * @author raziel.alvarez
+ *
+ */
 public class PDSConnectionProvider implements ConnectionProvider<PooledConnectionWrapper> {
 
   private ConnectionPoolDataSource dataSource;
 
+  /**
+   * Creates a new provider backed by the passed pooled data source.
+   *
+   * @param dataSource The pooled data source.
+   */
   public PDSConnectionProvider(ConnectionPoolDataSource dataSource) {
     this.dataSource = dataSource;
   }
@@ -21,6 +33,9 @@ public class PDSConnectionProvider implements ConnectionProvider<PooledConnectio
     return new BasePooledConnectionWrapper(dataSource.getPooledConnection());
   }
 
+  /*
+   * Utility class, concrete implementation of a PooledConnectionWrapper.
+   */
   private static class BasePooledConnectionWrapper implements PooledConnectionWrapper {
 
     private PooledConnection pconn;
