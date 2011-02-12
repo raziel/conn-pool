@@ -6,7 +6,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
-import com.raz.db.conn.ConnectionWrapper;
 import com.raz.db.conn.DSConnectionProvider;
 import com.raz.db.conn.DriverManagerConnectionProvider;
 import com.raz.db.conn.PDSConnectionProvider;

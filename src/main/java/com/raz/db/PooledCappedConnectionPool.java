@@ -85,6 +85,25 @@ public class PooledCappedConnectionPool extends CappedConnectionPool {
     return false;
   }
 
+
+  @Override
+  protected void closeConnection(Connection conn) throws SQLException {
+    logDebug("Closing a connection.");
+    PooledConnectionWrapper connw = liveConnections.remove(conn);
+    if (connw != null) {
+      livePooledConnections.remove(connw.getPooledConnection());
+      connw.getPooledConnection().close();
+      logDebug("Connection closed.");
+    }
+  }
+
+  @Override
+  protected void closeConnections() {
+    logDebug("Releasing connections in the connection manager.");
+    connMngr.closeAvailableConnections();
+    logDebug("Available connections released in the connection manager.");
+  }
+
   /*
    * Utility method to reallocate a pooled connection back into the manager. This method is used
    * when the reallocation is triggered by a connection event (see PooledConnectionEventListener).

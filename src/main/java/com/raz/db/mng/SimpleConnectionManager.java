@@ -56,4 +56,9 @@ implements ConnectionManagementStrategy<T> {
     availableConnections.add(conn);
   }
 
+  @Override
+  public synchronized void closeAvailableConnections() {
+    availableConnections.clear();
+  }
+
 }

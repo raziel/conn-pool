@@ -28,6 +28,9 @@ public abstract class CappedConnectionPool implements ConnectionPool {
 
   protected Semaphore connRequest;
   protected int requestTimeout;
+  protected int maxLiveConnections;
+
+  private boolean poolClosed = false;
 
   /**
    * Creates a new Connection Pool capped to the given maximum number of alive (in use) connections,
@@ -37,6 +40,7 @@ public abstract class CappedConnectionPool implements ConnectionPool {
    */
   public CappedConnectionPool(int maxLiveConnections, int requestTimeout) {
     connRequest = new Semaphore(maxLiveConnections, true);
+    this.maxLiveConnections = maxLiveConnections;
     this.requestTimeout = requestTimeout;
   }
 
@@ -46,6 +50,10 @@ public abstract class CappedConnectionPool implements ConnectionPool {
    */
   @Override
   public Connection getConnection() throws SQLException {
+    if (poolClosed) {
+      logDebug("Rejected request to acquire connection due pool being closed.");
+      throw new IllegalStateException("Connection pool has been closed.");
+    }
     logDebug("Trying to acquire connection.");
     try {
       if (!connRequest.tryAcquire(requestTimeout, TimeUnit.SECONDS)) {
@@ -78,8 +86,13 @@ public abstract class CappedConnectionPool implements ConnectionPool {
   public void releaseConnection(Connection conn) throws SQLException {
     boolean doRelease = true;
     try {
-      logDebug("Trying to release a connection.");
-      doRelease = reallocateConnection(conn);
+      if (poolClosed) {
+        logDebug("Trying to close a connection.");
+        closeConnection(conn);
+      } else {
+        logDebug("Trying to release a connection.");
+        doRelease = reallocateConnection(conn);
+      }
     } finally {
       if (doRelease) {
         connRequest.release();
@@ -88,6 +101,14 @@ public abstract class CappedConnectionPool implements ConnectionPool {
         logDebug("Unable to release a connection.");
       }
     }
+  }
+
+  @Override
+  public void freeConnections() {
+    logDebug("Closing available connections.");
+    poolClosed = true;
+    closeConnections();
+    logDebug("Available connections closed.");
   }
 
   /**
@@ -145,5 +166,16 @@ public abstract class CappedConnectionPool implements ConnectionPool {
    * @throws SQLException If there is a problem reallocating the connection.
    */
   protected abstract boolean reallocateConnection(Connection conn) throws SQLException;
+
+  /**
+   * Method expected to close the passed connection.
+   * @throws SQLException If there is a problem closing the connection.
+   */
+  protected abstract void closeConnection(Connection conn) throws SQLException;
+
+  /**
+   * Method expected to close all available physical connections.
+   */
+  protected abstract void closeConnections();
 
 }

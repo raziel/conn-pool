@@ -30,4 +30,11 @@ public interface ConnectionManagementStrategy<T extends ConnectionWrapper> {
    */
   void reallocateConnection(T conn) throws SQLException;
 
+  /**
+   * Releases all available connections.
+   *
+   * @return
+   */
+  void closeAvailableConnections();
+
 }

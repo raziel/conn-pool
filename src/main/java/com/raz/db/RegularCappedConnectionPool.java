@@ -60,4 +60,21 @@ public class RegularCappedConnectionPool extends CappedConnectionPool {
     return false;
   }
 
+  @Override
+  protected void closeConnection(Connection conn) throws SQLException {
+    logDebug("Closing a connection.");
+    SimpleConnectionWrapper connw = liveConnections.remove(conn);
+    if (connw != null) {
+      connw.getConnection().close();
+      logDebug("Connection closed.");
+    }
+  }
+
+  @Override
+  protected void closeConnections() {
+    logDebug("Releasing connections in the connection manager.");
+    connMngr.closeAvailableConnections();
+    logDebug("Available connections released in the connection manager.");
+  }
+
 }

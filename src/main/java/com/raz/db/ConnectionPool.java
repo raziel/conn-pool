@@ -29,4 +29,11 @@ public interface ConnectionPool {
    */
   void releaseConnection(Connection con) throws SQLException;
 
+  /**
+   * Closes all available connections.
+   *
+   * @throws SQLException Exception thrown in case of a failure closing the connections.
+   */
+  void freeConnections() throws SQLException;
+
 }
