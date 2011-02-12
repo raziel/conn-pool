@@ -5,35 +5,55 @@ import java.sql.SQLException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import com.raz.db.conn.ConnectionWrapper;
-
+/**
+ * Concrete Capped Connection Pool. It is called "Regular" to differentiate it from its
+ * {@link PooledCappedConnectionPool}.
+ *
+ * The actual allocation of connections is delegated to the {@link ConnectionManagementStrategy}.
+ *
+ * @author raziel.alvarez
+ *
+ */
 public class RegularCappedConnectionPool extends CappedConnectionPool {
 
-  private ConnectionManagementStrategy<ConnectionWrapper> connMngr;
-  private ConcurrentMap<Connection, ConnectionWrapper> liveConnections;
+  private ConnectionManagementStrategy<RegularConnectionWrapper> connMngr;
+  private ConcurrentMap<Connection, RegularConnectionWrapper> liveConnections;
 
-  public RegularCappedConnectionPool(ConnectionManagementStrategy<ConnectionWrapper> connMngr,
+  /**
+   * Creates a new Connection Pool capped to the given parameters, and uses the passed connection
+   * manager to obtain, manage, and reallocate connections.
+   *
+   * @param connMngr The connection manager.
+   * @param maxLiveConnections The max number of connections.
+   * @param requestTimeout The timeout for a request.
+   */
+  public RegularCappedConnectionPool(ConnectionManagementStrategy<RegularConnectionWrapper> connMngr,
     int maxLiveConnections, int requestTimeout) {
     super(maxLiveConnections, requestTimeout);
     this.connMngr = connMngr;
-    liveConnections = new ConcurrentHashMap<Connection, ConnectionWrapper>();
+    liveConnections = new ConcurrentHashMap<Connection, RegularConnectionWrapper>();
   }
 
   @Override
   protected Connection aquireConnection() throws SQLException {
-    ConnectionWrapper connw = connMngr.aquireConnection();
+    logDebug("Acquiring a connection from the connection manager.");
+    RegularConnectionWrapper connw = connMngr.aquireConnection();
     Connection conn = connw.getConnection();
     liveConnections.put(conn, connw);
+    logDebug("Connection aquired from the connection manager.");
     return conn;
   }
 
   @Override
   protected boolean reallocateConnection(Connection conn) throws SQLException {
-    ConnectionWrapper connw = liveConnections.remove(conn);
+    logDebug("Reallocating a connection into the connection manager.");
+    RegularConnectionWrapper connw = liveConnections.remove(conn);
     if (connw != null) {
       connMngr.reallocateConnection(connw);
+      logDebug("Connection reallocated into the connection manager.");
       return true;
     }
+    logDebug("Unable to reallocate a connection into the connection manager.");
     return false;
   }
 
