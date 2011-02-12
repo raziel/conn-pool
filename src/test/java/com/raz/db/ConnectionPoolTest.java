@@ -15,8 +15,8 @@ public class ConnectionPoolTest {
 
   @Test
   public void testApp() {
-    RegularCappedConnectionPool dspool = new RegularCappedConnectionPool(new SimpleConnectionManager<ConnectionWrapper>(new DSConnectionProvider(null)), 10, 100);
-    RegularCappedConnectionPool dmpool = new RegularCappedConnectionPool(new SimpleConnectionManager<ConnectionWrapper>(new DriverManagerConnectionProvider(null)), 10, 100);
+    RegularCappedConnectionPool dspool = new RegularCappedConnectionPool(new SimpleConnectionManager<RegularConnectionWrapper>(new DSConnectionProvider(null)), 10, 100);
+    RegularCappedConnectionPool dmpool = new RegularCappedConnectionPool(new SimpleConnectionManager<RegularConnectionWrapper>(new DriverManagerConnectionProvider(null)), 10, 100);
     PooledCappedConnectionPool pdspool = new PooledCappedConnectionPool(new SimpleConnectionManager<PooledConnectionWrapper>(new PDSConnectionProvider(null)), 10, 100);
     logger.error("The log");
     assertTrue( true );

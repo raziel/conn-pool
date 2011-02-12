@@ -4,9 +4,7 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import com.raz.db.conn.ConnectionWrapper;
-
-public class DSConnectionProvider implements ConnectionProvider<ConnectionWrapper> {
+public class DSConnectionProvider implements ConnectionProvider<RegularConnectionWrapper> {
 
   private DataSource dataSource;
 
@@ -15,7 +13,7 @@ public class DSConnectionProvider implements ConnectionProvider<ConnectionWrappe
   }
 
   @Override
-  public ConnectionWrapper getConnection() throws SQLException {
+  public RegularConnectionWrapper getConnection() throws SQLException {
     return new RegularConnectionWrapper(dataSource.getConnection());
   }
 

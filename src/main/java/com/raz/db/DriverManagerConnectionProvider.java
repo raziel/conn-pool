@@ -3,9 +3,7 @@ package com.raz.db;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import com.raz.db.conn.ConnectionWrapper;
-
-public class DriverManagerConnectionProvider implements ConnectionProvider<ConnectionWrapper> {
+public class DriverManagerConnectionProvider implements ConnectionProvider<RegularConnectionWrapper> {
 
   private String url;
 
@@ -14,7 +12,7 @@ public class DriverManagerConnectionProvider implements ConnectionProvider<Conne
   }
 
   @Override
-  public ConnectionWrapper getConnection() throws SQLException {
+  public RegularConnectionWrapper getConnection() throws SQLException {
     return new RegularConnectionWrapper(DriverManager.getConnection(url));
   }
 
