@@ -7,7 +7,12 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
 import com.raz.db.conn.ConnectionWrapper;
+import com.raz.db.conn.DSConnectionProvider;
+import com.raz.db.conn.DriverManagerConnectionProvider;
+import com.raz.db.conn.PDSConnectionProvider;
 import com.raz.db.conn.PooledConnectionWrapper;
+import com.raz.db.conn.SimpleConnectionWrapper;
+import com.raz.db.mng.SimpleConnectionManager;
 
 public class ConnectionPoolTest {
 

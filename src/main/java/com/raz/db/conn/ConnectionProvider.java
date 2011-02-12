@@ -1,8 +1,7 @@
-package com.raz.db;
+package com.raz.db.conn;
 
 import java.sql.SQLException;
 
-import com.raz.db.conn.ConnectionWrapper;
 
 /**
  * Provider of {@link ConnectionWrapper} instances.

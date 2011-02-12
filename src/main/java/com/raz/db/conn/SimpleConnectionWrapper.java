@@ -1,8 +1,7 @@
-package com.raz.db;
+package com.raz.db.conn;
 
 import java.sql.Connection;
 
-import com.raz.db.conn.ConnectionWrapper;
 
 /**
  * Wraps {@link Connection} instances directly.

@@ -1,4 +1,4 @@
-package com.raz.db;
+package com.raz.db.mng;
 
 import java.sql.Connection;
 import java.sql.SQLException;

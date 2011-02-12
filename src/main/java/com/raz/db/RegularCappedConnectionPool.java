@@ -5,6 +5,9 @@ import java.sql.SQLException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import com.raz.db.conn.SimpleConnectionWrapper;
+import com.raz.db.mng.ConnectionManagementStrategy;
+
 /**
  * Concrete Capped Connection Pool. It is called "Regular" to differentiate it from its
  * {@link PooledCappedConnectionPool}.

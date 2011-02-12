@@ -1,9 +1,10 @@
-package com.raz.db;
+package com.raz.db.mng;
 
 import java.sql.SQLException;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
+import com.raz.db.conn.ConnectionProvider;
 import com.raz.db.conn.ConnectionWrapper;
 
 /**

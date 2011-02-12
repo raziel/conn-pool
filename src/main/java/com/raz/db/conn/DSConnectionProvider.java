@@ -1,8 +1,9 @@
-package com.raz.db;
+package com.raz.db.conn;
 
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
+
 
 /**
  * Provider of {@link SimpleConnectionWrapper} instances backed by a {@link DataSource}.

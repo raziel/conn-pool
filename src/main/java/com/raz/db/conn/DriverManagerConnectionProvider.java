@@ -1,7 +1,8 @@
-package com.raz.db;
+package com.raz.db.conn;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
+
 
 /**
  * Provider of {@link SimpleConnectionWrapper} instances, backed by a pre-configured

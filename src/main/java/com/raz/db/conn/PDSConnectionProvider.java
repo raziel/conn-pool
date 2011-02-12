@@ -1,4 +1,4 @@
-package com.raz.db;
+package com.raz.db.conn;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import javax.sql.ConnectionPoolDataSource;
 import javax.sql.PooledConnection;
 
-import com.raz.db.conn.PooledConnectionWrapper;
 
 /**
  * Provider of {@link PooledConnectionWrapper} instances backed by a
